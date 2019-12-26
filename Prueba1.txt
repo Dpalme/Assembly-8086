@@ -1,3 +1,0 @@
-MOV AX,2
-INC AX
-PUSH AX
