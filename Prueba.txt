@@ -1,0 +1,14 @@
+        MOV AX,2
+        MOV BX,2
+        PUSH AX
+        
+COMPARE: CMP AX,2048
+        JE  END
+        MUL BX
+        PUSH AX
+        JMP COMPARE
+        
+END:    MOV AX,0
+        MOV DX,0
+        INT 21h
+        RET
