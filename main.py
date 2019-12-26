@@ -4,11 +4,15 @@ Author: Diego Palmerín Bonada
 
 Inverse Compiler for Assembly 8086 which executes programs written for
 Assembly 8086 on Python.
+
+Change the file variable to whichever file you want to run or modify the
+given Test.txt file.
 """
 
 from sys import stdout, stderr, exit
 
-# Inicializa Variables globales
+# Intialize global variables
+file = 'Test.txt'
 STACK = []
 VAL = {'AX': 0, 'BX': 0, 'CX': 0, 'DX': 0, 'ZF': 0, 'SP': 0, 'IP': 0}
 CURRENT_LINE = 0
@@ -16,7 +20,7 @@ NEXT_LINE = 1
 RUN = True
 
 
-# FUNCIONES DEL ENSAMBLADOR
+# Assembly 8086 Functions
 def MOV():
     """Following the format 'MOV VAL['SP'],VAL['IP']' it assigns the value of
     VAL['IP'] to the variable VAL['SP']."""
@@ -185,7 +189,7 @@ def INT():
 
 
 def quit():
-    """Prints Jump Points, Stack and Values and exits the program"""
+    """Prints Jump Points, Stack and Values before exiting the program"""
 
     global RUN
     stdout.write("\nJump Points: %s\nStack: %s\nVALUES: %s\n" %
@@ -240,16 +244,15 @@ def runLine(line):
         RUN = False
 
 
-# Inicializa diccionarios globales
+# Dictionary to translate string commands into function calls
 FUNCTIONS = {'MOV': MOV, 'ADD': ADD, 'PUSH': PUSH, 'SUB': SUB, 'INC': INC,
              'DEC': DEC, 'MUL': MUL, 'DIV': DIV, 'CMP': CMP, 'JE': JE,
              'JNE': JNE, 'JMP': JMP, 'POP': POP, 'RET': RET, 'INT': INT}
 
-# Abre .txt y asigna sus LINES a un arreglo
-FILE = open('Prueba.txt', 'r')
-LINES = FILE.readlines()
+# Opens the file to run and assigns the file lines to an array
+LINES = open(file, 'r').readlines()
 
-# Establece JUMP_POINTS
+# Looks for all tags and marks the line's they're on JUMP_POINTS
 JUMP_POINTS = {line[0:line.index(':')]: number
                for number, line in enumerate(LINES) if line.find(':') != -1}
 
