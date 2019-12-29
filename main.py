@@ -4,15 +4,12 @@ Author: Diego Palmerín Bonada
 
 Inverse Compiler for Assembly 8086 which executes programs written for
 Assembly 8086 on Python.
-
-Change the file variable to whichever file you want to run or modify the
-given Test.txt file.
 """
 
 from sys import stdout, stderr, exit
 
-# Intialize global variables
-file = 'Test.txt'
+# Global variables
+FILE = open('Prueba.txt', 'r')
 STACK = []
 VAL = {'AX': 0, 'BX': 0, 'CX': 0, 'DX': 0, 'ZF': 0, 'SP': 0, 'IP': 0}
 CURRENT_LINE = 0
@@ -20,7 +17,6 @@ NEXT_LINE = 1
 RUN = True
 
 
-# Assembly 8086 Functions
 def MOV():
     """Following the format 'MOV VAL['SP'],VAL['IP']' it assigns the value of
     VAL['IP'] to the variable VAL['SP']."""
@@ -31,6 +27,10 @@ def MOV():
         stderr.write('ERROR ASSIGNING %s TO %s ON LINE %d\n' %
                      (str(VAL['IP']), str(VAL['SP']), CURRENT_LINE))
         quit()
+    except ValueError:
+        stderr.write('%s IS NOT A NUMBER. LINE %d\n' %
+                     (str(VAL['IP']), CURRENT_LINE))
+        quit()
 
 
 def ADD():
@@ -38,10 +38,14 @@ def ADD():
     VAL['IP'] to the variable VAL['SP']."""
 
     try:
-        VAL[VAL['SP']] += VAL['IP']
+        VAL[VAL['SP']] += int(VAL['IP'])
     except KeyError:
-        stderr.write('ERROR ADDING %s TO %s ON LINE %d\n' %
+        stderr.write('ERROR ASSIGNING %s TO %s ON LINE %d\n' %
                      (str(VAL['IP']), str(VAL['SP']), CURRENT_LINE))
+        quit()
+    except ValueError:
+        stderr.write('%s IS NOT A NUMBER. LINE %d\n' %
+                     (str(VAL['IP']), CURRENT_LINE))
         quit()
 
 
@@ -50,10 +54,14 @@ def SUB():
     VAL['IP'] from the variable VAL['SP']."""
 
     try:
-        VAL[VAL['SP']] -= VAL['IP']
+        VAL[VAL['SP']] -= int(VAL['IP'])
     except KeyError:
-        stderr.write('ERROR SUBSTRACTING %s FROM %s ON LINE %d\n' %
+        stderr.write('ERROR ASSIGNING %s TO %s ON LINE %d\n' %
                      (str(VAL['IP']), str(VAL['SP']), CURRENT_LINE))
+        quit()
+    except ValueError:
+        stderr.write('%s IS NOT A NUMBER. LINE %d\n' %
+                     (str(VAL['IP']), CURRENT_LINE))
         quit()
 
 
@@ -85,14 +93,19 @@ def DIV():
     VAL['SP'] to AX and the modulus of AX % VAL['SP'] to DX."""
 
     try:
-        VAL['AX'], VAL['DX'] = VAL['AX'] // VAL[VAL['SP']],
-        VAL['AX'] % VAL[VAL['SP']]
+        AX = int(VAL['AX'])
+        variable = int(VAL[VAL['SP']])
+        VAL['AX'], VAL['DX'] = AX // variable, AX % variable
     except KeyError:
         stderr.write('ERROR DIVIDING AX BY %s ON LINE %d\n' %
                      (str(VAL['SP']), CURRENT_LINE))
         quit()
     except ZeroDivisionError:
         stderr.write('DIVISION BY ZERO ON LINE %d\n' % CURRENT_LINE)
+        quit()
+    except ValueError:
+        stderr.write('%s IS NOT A NUMBER. LINE %d\n' %
+                     (str(VAL['SP']), CURRENT_LINE))
         quit()
 
 
@@ -101,13 +114,17 @@ def MUL():
     VAL['SP'] to AX."""
 
     try:
-        VAL['AX'] = VAL['AX'] * VAL[VAL['SP']]
+        VAL['AX'] *= int(VAL[VAL['SP']])
     except KeyError:
         stderr.write('ERROR MULTIPLYING AX BY %s ON LINE %d\n' %
                      (str(VAL['SP']), CURRENT_LINE))
         quit()
     except TypeError:
         stderr.write('ERROR MULTIPLYING AX BY %s ON LINE %d\n' %
+                     (str(VAL['SP']), CURRENT_LINE))
+        quit()
+    except ValueError:
+        stderr.write('%s IS NOT A NUMBER. LINE %d\n' %
                      (str(VAL['SP']), CURRENT_LINE))
         quit()
 
@@ -128,12 +145,12 @@ def JE():
     value of ZF is 1."""
 
     global NEXT_LINE
-    try:
+    if VAL['SP'] in JUMP_POINTS:
         if VAL['ZF'] == 1:
             NEXT_LINE = JUMP_POINTS[VAL['SP']]
             VAL['ZF'] = 0
-    except KeyError:
-        stderr.write('ERROR JUMPING TO %s ON LINE %d\n' %
+    else:
+        stderr.write('JUMP POINT %s DOES NOT EXIST. LINE %d\n' %
                      (VAL['SP'], CURRENT_LINE))
 
 
@@ -142,11 +159,11 @@ def JNE():
     VAL['SP'] if the value of ZF is 0."""
 
     global NEXT_LINE
-    try:
+    if VAL['SP'] in JUMP_POINTS:
         if VAL['ZF'] == 0:
             NEXT_LINE = JUMP_POINTS[VAL['SP']]
-    except KeyError:
-        stderr.write('ERROR JUMPING TO %s ON LINE %d\n' %
+    else:
+        stderr.write('JUMP POINT %s DOES NOT EXIST. LINE %d\n' %
                      (VAL['SP'], CURRENT_LINE))
 
 
@@ -155,10 +172,10 @@ def JMP():
     VAR."""
 
     global NEXT_LINE
-    try:
+    if VAL['SP'] in JUMP_POINTS:
         NEXT_LINE = JUMP_POINTS[VAL['SP']]
-    except KeyError:
-        stderr.write('ERROR JUMPING TO %s ON LINE %d\n' %
+    else:
+        stderr.write('JUMP POINT %s DOES NOT EXIST. LINE %d\n' %
                      (VAL['SP'], CURRENT_LINE))
 
 
@@ -166,14 +183,14 @@ def PUSH():
     """Following the format 'PUSH VAR' it adds to the Stack the value of
     VAR."""
 
-    STACK.append(VAL[VAL['SP']])
+    STACK.append(int(VAL[VAL['SP']]))
 
 
-def POP(var):
+def POP():
     """Following the format 'POP VAR' it removes and returns the given value
     from the Stack."""
 
-    STACK[var].pop()
+    STACK[VAL[VAL['SP']]].pop()
 
 
 def RET():
@@ -189,9 +206,8 @@ def INT():
 
 
 def quit():
-    """Prints Jump Points, Stack and Values before exiting the program"""
+    """Prints Jump Points, Stack and Values and exits the program"""
 
-    global RUN
     stdout.write("\nJump Points: %s\nStack: %s\nVALUES: %s\n" %
                  (str(JUMP_POINTS), str(STACK), str(VAL))
                  )
@@ -205,56 +221,58 @@ def runLine(line):
     # Checks if the line has code to parse.
     if commands:
         # Checks if the line has a tag
-        if commands[0].endswith(':'):
+        if ':' in commands[0]:
             # Checks if the tag is the only statement
             if len(commands) != 1:
-                try:
+                if ',' in commands[2]:
                     VAL['SP'], VAL['IP'] = commands[2].split(",")
-                except ValueError:
+                else:
                     VAL['SP'] = commands[2]
-                try:
+
+                if commands[1] in FUNCTIONS:
                     FUNCTIONS[commands[1]]()
-                except KeyError:
-                    stderr.write("%s IS NOT A KNOWN FUNCTION. LINE %d\n" %
+                else:
+                    stderr.write("\n%s IS NOT A KNOWN FUNCTION. LINE %d\n" %
                                  (commands[1], CURRENT_LINE))
                     quit()
         else:
             # Checks if the line is a single commmand
             if len(commands) == 1:
-                try:
+                if commands[0] in FUNCTIONS:
                     FUNCTIONS[commands[0]]()
-                except KeyError:
-                    stdout.write('FUNCTION %s REQUIRES ARGUMENT, LINE %d\n' %
-                                 commands[0], CURRENT_LINE)
-                    quit()
-            else:
-                try:
-                    VAL['SP'], VAL['IP'] = commands[1].split(",")
-                except ValueError:
-                    VAL['SP'] = commands[1]
-                try:
-                    FUNCTIONS[commands[0]]()
-                except KeyError:
+                else:
                     stderr.write("\n%s IS NOT A KNOWN FUNCTION. LINE %d\n" %
                                  (commands[0], CURRENT_LINE))
                     quit()
+            else:
+                if ',' in commands[1]:
+                    VAL['SP'], VAL['IP'] = commands[1].split(",")
+                else:
+                    VAL['SP'] = commands[1]
+
+                if commands[0] in FUNCTIONS:
+                    FUNCTIONS[commands[0]]()
+                else:
+                    stderr.write("\n%s IS NOT A KNOWN FUNCTION. LINE %d\n" %
+                                 (commands[0], CURRENT_LINE))
+                    quit()
+
     CURRENT_LINE = NEXT_LINE
     NEXT_LINE += 1
     if CURRENT_LINE == len(LINES):
         RUN = False
 
 
-# Dictionary to translate string commands into function calls
 FUNCTIONS = {'MOV': MOV, 'ADD': ADD, 'PUSH': PUSH, 'SUB': SUB, 'INC': INC,
              'DEC': DEC, 'MUL': MUL, 'DIV': DIV, 'CMP': CMP, 'JE': JE,
              'JNE': JNE, 'JMP': JMP, 'POP': POP, 'RET': RET, 'INT': INT}
 
-# Opens the file to run and assigns the file lines to an array
-LINES = open(file, 'r').readlines()
 
-# Looks for all tags and marks the line's they're on JUMP_POINTS
+LINES = FILE.readlines()
+
+# Establece JUMP_POINTS
 JUMP_POINTS = {line[0:line.index(':')]: number
-               for number, line in enumerate(LINES) if line.find(':') != -1}
+               for number, line in enumerate(LINES) if ':' in line}
 
 while RUN:
     runLine(LINES[CURRENT_LINE])
