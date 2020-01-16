@@ -187,10 +187,10 @@ def PUSH():
 
 
 def POP():
-    """Following the format 'POP VAR' it removes and returns the given value
+    """Following the format 'POP VAR' it removes and returns the top value
     from the Stack."""
 
-    STACK[VAL[VAL['SP']]].pop()
+    VAL[VAL['SP']] = STACK.pop()
 
 
 def RET():
