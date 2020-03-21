@@ -25,13 +25,13 @@ function END_PROGRAM(){
     RUN = false;
 
     val_string = ""
-    for(key in VAL){ val_string += key + " : " + VAL[key] + ", "; }
-    LOG_ERROR("VAL: " + val_string);
-    stack_string = ""
+    for(key in VAL){ val_string += key + " : " + VAL[key] + "\n"; }
+    LOG_ERROR("REGISTERS:\n" + val_string);
+    stack_string = "";
     STACK.forEach(element =>{
-        stack_string += element + ", ";
+        stack_string += element + "\n";
     });
-    LOG_ERROR("STACK: " + stack_string);
+    LOG_ERROR("STACK:\n" + stack_string);
 }
 
 function ERROR() {

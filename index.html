@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Assembly 8086</title>
-    <link href="main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://dpalme.github.io/Peoria/css/peoria-0-2-2.css">
     <script src="main.js"></script>
 </head>
-<body>
-    <textarea id="file" placeholder="Enter your Assembly Code Here..." rows="10">        MOV AX,2
+
+<body class="night">
+    <div class="container-top-margin">
+        <textarea id="file" placeholder="Enter your Assembly Code Here..." rows="20"
+            class="body-text white-bg black six columns gutter-margin-bottom">
+        MOV AX,2
         MOV BX,2
         PUSH AX
         
@@ -22,8 +27,12 @@ COMPARE: CMP AX,2048
 END:    MOV AX,0
         MOV DX,0
         INT 21h
-        RET</textarea>
-    <textarea id="log" rows="10">Output</textarea>
-    <button onclick="main()">Run</button>
+        RET
+        </textarea>
+        <textarea id="log" rows="20" class="body-text white-bg black six columns">OUTPUT</textarea>
+        <button onclick="main()"
+            class="half-gutter-padding gutter-margin-vertical four columns four-offset">Run</button>
+    </div>
 </body>
+
 </html>
