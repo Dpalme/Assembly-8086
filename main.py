@@ -2,8 +2,7 @@
 """
 Author: Diego Palmerín Bonada
 
-Inverse Compiler for Assembly 8086 which executes programs written for
-Assembly 8086 on Python.
+Compiler from Assembly 8086 to Python.
 """
 
 from sys import stdout, stderr, exit
