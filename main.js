@@ -32,6 +32,7 @@ function UPDATE_OUTPUT() {
     for (key in VAL) {
         document.getElementById(key).value = VAL[key]
     }
+    document.getElementById('LINE').value = CURRENT_LINE;
     STACK.forEach(element => {
         stack_string += element + "\n";
     });
@@ -181,7 +182,44 @@ function INT() {
     VAL['IP'] = 0;
 }
 
-function main() {
+function run_line(line) {
+    line = COMMANDS[line];
+
+    if (line != undefined) {
+        if (line.length != 0) {
+            if (line.length == 1) {
+                if (line[0] == 'RET') {
+                    FUNCTIONS[line[0]]();
+                } else if(!line[0] in FUNCTIONS) {
+                    LOG_ERROR("NO SUCH FUNCTION" + line[1]);
+                    ERROR();
+                } else {
+                    LOG_ERROR("THE FUNCTION " + line[1] + " REQUIRES ARGUMENTS");
+                    ERROR();
+                }
+            } else {
+                if (line[1].includes(",")) {
+                    vars = line[1].split(",");
+                    VAL["SP"] = vars[0].trim();
+                    VAL["IP"] = vars[1].trim();
+                } else {
+                    VAL["SP"] = line[1];
+                }
+                if (line[0] in FUNCTIONS) {
+                    FUNCTIONS[line[0]]();
+                } else {
+                    LOG_ERROR("NO SUCH FUNCTION" + line[1]);
+                    ERROR();
+                }
+            }
+        }
+    }
+
+    CURRENT_LINE = NEXT_LINE;
+    NEXT_LINE += 1;
+}
+
+function initialize() {
     FILE = document.getElementById("file");
     STACK_DOC = document.getElementById("stack");
     STACK_DOC.value = "";
@@ -222,44 +260,11 @@ function main() {
         COMMANDS.push(commands);
     });
 
-    function run_line(line) {
-        line = COMMANDS[line];
-
-        if (line != undefined) {
-            if (line.length != 0) {
-                if (line.length == 1) {
-                    if (line[0] == 'RET') {
-                        FUNCTIONS[line[0]]();
-                    } else if(!line[0] in FUNCTIONS) {
-                        LOG_ERROR("NO SUCH FUNCTION" + line[1]);
-                        ERROR();
-                    } else {
-                        LOG_ERROR("THE FUNCTION " + line[1] + " REQUIRES ARGUMENTS");
-                        ERROR();
-                    }
-                } else {
-                    if (line[1].includes(",")) {
-                        vars = line[1].split(",");
-                        VAL["SP"] = vars[0].trim();
-                        VAL["IP"] = vars[1].trim();
-                    } else {
-                        VAL["SP"] = line[1];
-                    }
-                    if (line[0] in FUNCTIONS) {
-                        FUNCTIONS[line[0]]();
-                    } else {
-                        LOG_ERROR("NO SUCH FUNCTION" + line[1]);
-                        ERROR();
-                    }
-                }
-            }
-        }
-
-        CURRENT_LINE = NEXT_LINE;
-        NEXT_LINE += 1;
-    }
     CALLS = 0;
+}
 
+function execute(){
+    initialize()
     while (RUN) {
         if (CURRENT_LINE < COMMANDS.length) {
             run_line(CURRENT_LINE);
@@ -275,4 +280,12 @@ function main() {
     }
 
     END_PROGRAM();
+}
+
+function single_line(){
+    if(typeof CALLS === 'undefined'){
+        initialize();
+    }
+    run_line(CURRENT_LINE);
+    UPDATE_OUTPUT();
 }

@@ -38,31 +38,35 @@ END:    MOV AX,0
                 <label class="half-gutter-margin-bottom">Variables</label>
                 <div class="full column">
                     <label for="AX" class="six columns">AX</label>
-                    <input type="text" id="AX" class="six columns text-center">
+                    <input type="text" id="AX" class="six columns text-center" readonly>
                 </div>
                 <div class="full column">
                     <label for="BX" class="six columns">BX</label>
-                    <input type="text" id="BX" class="six columns text-center">
+                    <input type="text" id="BX" class="six columns text-center" readonly>
                 </div>
                 <div class="full column">
                     <label for="CX" class="six columns">CX</label>
-                    <input type="text" id="CX" class="six columns text-center">
+                    <input type="text" id="CX" class="six columns text-center" readonly>
                 </div>
                 <div class="full column">
                     <label for="DX" class="six columns">DX</label>
-                    <input type="text" id="DX" class="six columns text-center">
+                    <input type="text" id="DX" class="six columns text-center" readonly>
                 </div>
                 <div class="full column">
                     <label for="ZF" class="six columns">ZF</label>
-                    <input type="text" id="ZF" class="six columns text-center">
+                    <input type="text" id="ZF" class="six columns text-center" readonly>
                 </div>
                 <div class="full column">
                     <label for="SP" class="six columns">SP</label>
-                    <input type="text" id="SP" class="six columns text-center">
+                    <input type="text" id="SP" class="six columns text-center" readonly>
                 </div>
                 <div class="full column">
                     <label for="IP" class="six columns">IP</label>
-                    <input type="text" id="IP" class="six columns text-center">
+                    <input type="text" id="IP" class="six columns text-center" readonly>
+                </div>
+                <div class="full column">
+                    <label for="LINE" class="six columns">CURRENT LINE</label>
+                    <input type="text" id="LINE" class="six columns text-center" readonly>
                 </div>
             </div>
             <div class="three columns">
@@ -81,8 +85,11 @@ END:    MOV AX,0
             </div>
         </form>
 
-        <button onclick="main()" class="half-gutter-padding gutter-margin-vertical two columns five-offset">
+        <button onclick="execute()" class="half-gutter-padding gutter-margin-vertical two columns four-offset">
             Run
+        </button>
+        <button onclick="single_line()" id="single_line" class="half-gutter-padding gutter-margin-vertical two columns">
+            Single Line
         </button>
     </div>
 </body>
