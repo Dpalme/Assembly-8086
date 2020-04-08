@@ -17,28 +17,31 @@ FUNCTIONS = {
 };
 
 function LOG_ERROR(error){
-    LOG.value = LOG.value + error + "\n";
+    ERROR_CONSOLE = document.getElementById("errors");
+    ERROR_CONSOLE.value += error + "\n";
     console.log(error);
 }
 
 function END_PROGRAM(){
     RUN = false;
+    UPDATE_OUTPUT();
+}
 
-    val_string = ""
-    for(key in VAL){ val_string += key + " : " + VAL[key] + "\n"; }
-    LOG_ERROR("REGISTERS:\n" + val_string);
-    stack_string = "";
+function UPDATE_OUTPUT() {
+    stack_string = ""
+    for(key in VAL){
+        document.getElementById(key).value = VAL[key]
+    }
     STACK.forEach(element =>{
         stack_string += element + "\n";
     });
-    LOG_ERROR("STACK:\n" + stack_string);
+    STACK_DOC.value = stack_string + "\n";
 }
 
 function ERROR() {
     RUN = false;
     LOG_ERROR("FATAL ERROR ON LINE " + (CURRENT_LINE + 1));
     LOG_ERROR(COMMANDS[CURRENT_LINE]);
-    LOG_ERROR("");
     END_PROGRAM();
 }
 
@@ -176,8 +179,9 @@ function INT(){
 
 function main() {
     FILE = document.getElementById("file");
-    LOG = document.getElementById("log");
-    LOG.value = "";
+    STACK_DOC = document.getElementById("stack");
+    STACK_DOC.value = "";
+    MAX_CALLS = document.getElementById("max_calls").value;
 	STACK = [];
 	VAL = {"AX": 0, "BX": 0, "CX": 0, "DX": 0, "ZF": 0, "SP": 0, "IP": 0};
 	CURRENT_LINE = 0;
@@ -194,9 +198,17 @@ function main() {
 				if(command.includes(":")) {
 					JUMP_POINTS[command.split(":")[0]] = LINES.indexOf(line);
 				}
-				commands.push(command);
+                commands.push(command.split(' ').join(''));
 			}
-		});
+        });
+        if (commands.length > 2 && commands[0].search(':')) {
+            LOG_ERROR("ERROR PARSING LINE [" + commands.join(' ') + "]\nMAKE SURE THERE ARE NO WHITESPACES BETWEEN ARGUMENTS");
+            END_PROGRAM();
+        }
+        if (commands.length > 3) {
+            LOG_ERROR("ERROR PARSING LINE [" + commands.join(' ') + "]\nMAKE SURE THERE ARE NO WHITESPACES BETWEEN ARGUMENTS");
+            END_PROGRAM();
+        }
 		COMMANDS.push(commands);
 	});
 
@@ -216,8 +228,8 @@ function main() {
                     } else{
                         if(line[2].includes(",")) {
                             vars = line[2].split(",");
-                            VAL["SP"] = vars[0];
-                            VAL["IP"] = vars[1];
+                            VAL["SP"] = vars[0].trim();
+                            VAL["IP"] = vars[1].trim();
                         } else{
                             VAL["SP"] = line[2];
                         }
@@ -239,8 +251,8 @@ function main() {
                     } else{
                         if(line[1].includes(",")) {
                             vars = line[1].split(",");
-                            VAL["SP"] = vars[0];
-                            VAL["IP"] = vars[1];
+                            VAL["SP"] = vars[0].trim();
+                            VAL["IP"] = vars[1].trim();
                         } else{
                             VAL["SP"] = line[1];
                         }
@@ -268,9 +280,9 @@ function main() {
             LOG_ERROR("NEXT LINE IS OUT OF INDEX");
             ERROR();
         }
-        if(CALLS > 200){
+        if(CALLS > MAX_CALLS){
             LOG_ERROR("MAX CALLS REACHED");
-            ERROR();
+            END_PROGRAM();
         }
     }
     

@@ -12,8 +12,11 @@
 
 <body class="night">
     <div class="container top-margin">
-        <textarea id="file" placeholder="Enter your Assembly Code Here..." rows="20"
-            class="body-text white-bg black six columns gutter-margin-bottom">
+        <form class="twelve columns">
+            <div class="six columns">
+                <label>INPUT</label>
+                <textarea id="file" placeholder="Enter your Assembly Code Here..." rows="20" spellcheck="false"
+                    class="body-text twelve columns gutter-margin-bottom">
         MOV AX,2
         MOV BX,2
         PUSH AX
@@ -26,12 +29,61 @@ COMPARE: CMP AX,2048
         
 END:    MOV AX,0
         MOV DX,0
+        MOV BX,0
         INT 21h
         RET
-        </textarea>
-        <textarea id="log" rows="20" class="body-text white-bg black six columns">OUTPUT</textarea>
-        <button onclick="main()"
-            class="half-gutter-padding gutter-margin-vertical four columns four-offset">Run</button>
+            </textarea>
+            </div>
+            <div class="three columns text-center text-center">
+                <label class="half-gutter-margin-bottom">Variables</label>
+                <div class="full column">
+                    <label for="AX" class="six columns">AX</label>
+                    <input type="text" id="AX" class="six columns text-center">
+                </div>
+                <div class="full column">
+                    <label for="BX" class="six columns">BX</label>
+                    <input type="text" id="BX" class="six columns text-center">
+                </div>
+                <div class="full column">
+                    <label for="CX" class="six columns">CX</label>
+                    <input type="text" id="CX" class="six columns text-center">
+                </div>
+                <div class="full column">
+                    <label for="DX" class="six columns">DX</label>
+                    <input type="text" id="DX" class="six columns text-center">
+                </div>
+                <div class="full column">
+                    <label for="ZF" class="six columns">ZF</label>
+                    <input type="text" id="ZF" class="six columns text-center">
+                </div>
+                <div class="full column">
+                    <label for="SP" class="six columns">SP</label>
+                    <input type="text" id="SP" class="six columns text-center">
+                </div>
+                <div class="full column">
+                    <label for="IP" class="six columns">IP</label>
+                    <input type="text" id="IP" class="six columns text-center">
+                </div>
+            </div>
+            <div class="three columns">
+                <label for="stack">STACK</label>
+                <textarea id="stack" rows="20" class="body-text" spellcheck="false"></textarea>
+            </div>
+            <div class="twelve columns margin-none">
+                <div class="three columns">
+                    <label for="max_calls">MAX CALLS</label>
+                    <input type="number" id="max_calls" value="200">
+                </div>
+                <div class="nine columns">
+                    <label for="errors">Errors</label>
+                    <textarea id="errors" rows="2" class="body-text" spellcheck="false"></textarea>
+                </div>
+            </div>
+        </form>
+
+        <button onclick="main()" class="half-gutter-padding gutter-margin-vertical four columns four-offset">
+            Run
+        </button>
     </div>
 </body>
 
